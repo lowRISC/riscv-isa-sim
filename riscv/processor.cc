@@ -741,14 +741,6 @@ void processor_t::take_trap(trap_t& t, reg_t epc)
     return;
   }
 
-  if (t.cause() == CAUSE_BREAKPOINT && (
-              (state.prv == PRV_M && state.dcsr->ebreakm) ||
-              (state.prv == PRV_S && state.dcsr->ebreaks) ||
-              (state.prv == PRV_U && state.dcsr->ebreaku))) {
-    enter_debug_mode(DCSR_CAUSE_SWBP);
-    return;
-  }
-
   // By default, trap to M-mode, unless delegated to HS-mode or VS-mode
   reg_t vsdeleg, hsdeleg;
   reg_t bit = state.nmi_int ? ((reg_t)1 << (get_isa().get_max_xlen()-1)) | NMI_INTERRUPT_NUM :
