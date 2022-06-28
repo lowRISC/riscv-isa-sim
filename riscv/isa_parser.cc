@@ -130,6 +130,20 @@ isa_parser_t::isa_parser_t(const char* str, const char *priv)
       extension_table[EXT_ZBKC] = true;
     } else if (ext_str == "zbkx") {
       extension_table[EXT_ZBKX] = true;
+    } else if (ext_str == "zca") {
+      extension_table[EXT_ZCA] = true;
+    } else if (ext_str == "zcf") {
+      if (max_xlen != 32)
+        bad_isa_string(str, "'Zcf' requires RV32");
+      extension_table[EXT_ZCF] = true;
+    } else if (ext_str == "zcb") {
+      extension_table[EXT_ZCB] = true;
+    } else if (ext_str == "zcd") {
+      extension_table[EXT_ZCD] = true;
+    } else if (ext_str == "zcmp") {
+      extension_table[EXT_ZCMP] = true;
+    } else if (ext_str == "zcmt") {
+      extension_table[EXT_ZCMT] = true;
     } else if (ext_str == "zk") {
       extension_table[EXT_ZBKB] = true;
       extension_table[EXT_ZBKC] = true;
@@ -221,6 +235,31 @@ isa_parser_t::isa_parser_t(const char* str, const char *priv)
   }
   if (*p) {
     bad_isa_string(str, ("can't parse: " + std::string(p)).c_str());
+  }
+
+  if (extension_table['C']) {
+    extension_table[EXT_ZCA] = true;
+    if (extension_table['F'] && max_xlen == 32)
+      extension_table[EXT_ZCF] = true;
+    if (extension_table['D'])
+      extension_table[EXT_ZCD] = true;
+  }
+
+  if (extension_table[EXT_ZCF] && !extension_table['F']) {
+    bad_isa_string(str, "'Zcf' extension requires 'F' extension");
+  }
+
+  if (extension_table[EXT_ZCD] && !extension_table['D']) {
+    bad_isa_string(str, "'Zcd' extension requires 'D' extension");
+  }
+
+  if ((extension_table[EXT_ZCMP] || extension_table[EXT_ZCMT]) && extension_table[EXT_ZCD]) {
+    bad_isa_string(str, "Zcmp' and 'Zcmt' exensions are incompatible with 'Zcd' extension");
+  }
+
+  if ((extension_table[EXT_ZCF] || extension_table[EXT_ZCD] || extension_table[EXT_ZCB] ||
+       extension_table[EXT_ZCMP] || extension_table[EXT_ZCMT]) && !extension_table[EXT_ZCA]) {
+    bad_isa_string(str, "'Zcf/Zcd/Zcb/Zcmp/Zcmt' extensions require 'Zca' extension");
   }
 
   std::string lowercase = strtolower(priv);
