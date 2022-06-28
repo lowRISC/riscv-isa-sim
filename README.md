@@ -39,6 +39,12 @@ Spike supports the following RISC-V ISA features:
   - CMO extension, v1.0
   - Debug v0.14
   - Smepmp extension v1.0
+  - Zca extension, v1.0
+  - Zcb extension, v1.0
+  - Zcf extension, v1.0
+  - Zcd extension, v1.0
+  - Zcmp extension, v1.0
+  - Zcmt extension, v1.0
 
 As a Spike extension, the remainder of the proposed
 [Bit-Manipulation Extensions](https://github.com/riscv/riscv-bitmanip)
