@@ -1324,17 +1324,21 @@ bool vxsat_csr_t::unlogged_write(const reg_t val) noexcept {
 }
 
 
-cpuctrl_csr_t::cpuctrl_csr_t(processor_t* const proc, const reg_t addr):
+cpuctrlsts_csr_t::cpuctrlsts_csr_t(processor_t* const proc, const reg_t addr):
   csr_t(proc, addr) {
 }
 
-reg_t cpuctrl_csr_t::read() const noexcept {
-  reg_t mask = (proc->get_secure_ibex() ? 0x3e : 0) | (proc->get_icache_en() ? 0x1 : 0);
-  return value & mask;
+reg_t cpuctrlsts_csr_t::read() const noexcept {
+  reg_t mask = (proc->get_secure_ibex() ? 0x13e : 0) |
+    (proc->get_icache_en() ? 0x1 : 0) | 0xc0;
+
+  return ((proc->get_ic_scr_key_valid() ? 0x100 : 0) | value) & mask;
 }
 
-bool cpuctrl_csr_t::unlogged_write(const reg_t val) noexcept {
-  // As per the Ibex spec, only the bottom 6 bits of cpuctrl are accessible.
-  value = val & 0x3f;
+bool cpuctrlsts_csr_t::unlogged_write(const reg_t val) noexcept {
+  // Only the bottom 8 bits of CPUCTRLSTS are writeable. The 9th bit
+  // (ic_scr_key_valid) is read-only and read directly from the processor state
+  // rather than stored in `value`.
+  value = val & 0xff;
   return true;
 }

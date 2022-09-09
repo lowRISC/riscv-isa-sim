@@ -329,11 +329,13 @@ public:
   void set_pmp_granularity(reg_t pmp_granularity);
   void set_mmu_capability(int cap);
   void set_ibex_flags(bool secure_ibex, bool icache_en);
+  void set_ic_scr_key_valid(bool valid) { ic_scr_key_valid = valid; }
 
   const char* get_symbol(uint64_t addr);
 
   bool get_secure_ibex() const { return secure_ibex; }
   bool get_icache_en() const { return icache_en; }
+  bool get_ic_scr_key_valid() const { return ic_scr_key_valid; }
 
 private:
   const isa_parser_t * const isa;
@@ -352,6 +354,7 @@ private:
   bool halt_on_reset;
   bool secure_ibex;
   bool icache_en;
+  bool ic_scr_key_valid;
   std::vector<bool> impl_table;
 
   std::vector<insn_desc_t> instructions;

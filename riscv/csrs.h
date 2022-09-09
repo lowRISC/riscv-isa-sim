@@ -713,9 +713,9 @@ class vxsat_csr_t: public masked_csr_t {
 };
 
 
-class cpuctrl_csr_t: public csr_t {
+class cpuctrlsts_csr_t: public csr_t {
  public:
-  cpuctrl_csr_t(processor_t* const proc, const reg_t addr);
+  cpuctrlsts_csr_t(processor_t* const proc, const reg_t addr);
   virtual reg_t read() const noexcept override;
  protected:
   virtual bool unlogged_write(const reg_t val) noexcept override;
