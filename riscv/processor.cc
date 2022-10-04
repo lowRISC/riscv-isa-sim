@@ -361,6 +361,9 @@ void state_t::reset(processor_t* const proc, reg_t max_isa)
   csrmap[CSR_TDATA1] = std::make_shared<tdata1_csr_t>(proc, CSR_TDATA1);
   csrmap[CSR_TDATA2] = tdata2 = std::make_shared<tdata2_csr_t>(proc, CSR_TDATA2);
   csrmap[CSR_TDATA3] = std::make_shared<const_csr_t>(proc, CSR_TDATA3, 0);
+  csrmap[CSR_MCONTEXT] = std::make_shared<const_csr_t>(proc, CSR_MCONTEXT, 0);
+  csrmap[CSR_MSCONTEXT] = std::make_shared<const_csr_t>(proc, CSR_MSCONTEXT, 0);
+  csrmap[CSR_SCONTEXT] = std::make_shared<const_csr_t>(proc, CSR_SCONTEXT, 0);
   debug_mode = false;
   single_step = STEP_NONE;
 
