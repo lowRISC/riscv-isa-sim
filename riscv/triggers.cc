@@ -36,36 +36,20 @@ bool mcontrol_t::tdata1_write(processor_t * const proc, const reg_t val) noexcep
   if (dmode && !proc->get_state()->debug_mode) {
     return false;
   }
-  auto xlen = proc->get_xlen();
-  dmode = get_field(val, MCONTROL_DMODE(xlen));
-  hit = get_field(val, CSR_MCONTROL_HIT);
-  select = get_field(val, MCONTROL_SELECT);
-  timing = get_field(val, MCONTROL_TIMING);
-  action = (triggers::action_t) get_field(val, MCONTROL_ACTION);
-  chain_bit = get_field(val, MCONTROL_CHAIN);
-  unsigned match_value = get_field(val, MCONTROL_MATCH);
-  switch (match_value) {
-    case MATCH_EQUAL:
-    case MATCH_NAPOT:
-    case MATCH_GE:
-    case MATCH_LT:
-    case MATCH_MASK_LOW:
-    case MATCH_MASK_HIGH:
-      match = (triggers::mcontrol_t::match_t) match_value;
-      break;
-    default:
-      match = MATCH_EQUAL;
-      break;
-  }
-  m = get_field(val, MCONTROL_M);
-  s = get_field(val, MCONTROL_S);
-  u = get_field(val, MCONTROL_U);
+  // Hardcode the register to match IBEX implementation. (see ibex_cs_registers.sv->tmatch_control_rdata)
+  dmode       = 1;
+  hit         = 0;
+  select      = 0;
+  timing      = 0;
+  action      = (triggers::action_t) 1;
+  chain_bit   = 0;
+  match       = MATCH_EQUAL; // simple match
+  m           = 1;
+  s           = 0;
+  u           = 1;
   execute_bit = get_field(val, MCONTROL_EXECUTE);
-  store_bit = get_field(val, MCONTROL_STORE);
-  load_bit = get_field(val, MCONTROL_LOAD);
-  // Assume we're here because of csrw.
-  if (execute_bit)
-    timing = 0;
+  store_bit   = 0;
+  load_bit    = 0;
   return true;
 }
 
