@@ -332,6 +332,13 @@ public:
       insn |= (insn_bits_t)from_le(*(const uint16_t*)translate_insn_addr_to_host(addr + 2)) << 16;
     }
 
+    // Check trigger after all bytes of insn has been fetched
+    triggers::action_t action;
+    auto match = proc->TM.memory_access_match(&action, triggers::OPERATION_EXECUTE, addr, 0);
+    if (match != triggers::MATCH_NONE) {
+      throw triggers::matched_t(triggers::OPERATION_EXECUTE, addr, 0, action);
+    }
+
     insn_fetch_t fetch = {proc->decode_insn(insn), insn};
     entry->tag = addr;
     entry->next = &icache[icache_index(addr + length)];
@@ -461,14 +468,6 @@ private:
       result = fetch_slow_path(addr);
     } else {
       result = tlb_data[vpn % TLB_ENTRIES];
-    }
-    if (unlikely(tlb_insn_tag[vpn % TLB_ENTRIES] == (vpn | TLB_CHECK_TRIGGERS))) {
-      target_endian<uint16_t>* ptr = (target_endian<uint16_t>*)(tlb_data[vpn % TLB_ENTRIES].host_offset + addr);
-      triggers::action_t action;
-      auto match = proc->TM.memory_access_match(&action, triggers::OPERATION_EXECUTE, addr, from_target(*ptr));
-      if (match != triggers::MATCH_NONE) {
-        throw triggers::matched_t(triggers::OPERATION_EXECUTE, addr, from_target(*ptr), action);
-      }
     }
     return result;
   }
