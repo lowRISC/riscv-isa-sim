@@ -10,7 +10,7 @@
 #include "simif.h"
 #include "processor.h"
 #include "memtracer.h"
-#include "byteorder.h"
+#include "fesvr/byteorder.h"
 #include "triggers.h"
 #include <stdlib.h>
 #include <vector>
@@ -418,6 +418,7 @@ public:
     blocksz = size;
   }
 
+  bool pmp_ok(reg_t addr, reg_t len, access_type type, reg_t mode);
 private:
   simif_t* sim;
   processor_t* proc;
@@ -493,7 +494,6 @@ private:
   }
 
   reg_t pmp_homogeneous(reg_t addr, reg_t len);
-  bool pmp_ok(reg_t addr, reg_t len, access_type type, reg_t mode);
 
 #ifdef RISCV_ENABLE_DUAL_ENDIAN
   bool target_big_endian;
