@@ -680,6 +680,14 @@ void mip_csr_t::backdoor_write_with_mask(const reg_t mask, const reg_t val) noex
   this->val = (this->val & ~mask) | (val & mask);
 }
 
+reg_t mip_csr_t::read_pre_val() const noexcept {
+  return pre_val;
+}
+
+void mip_csr_t::write_pre_val(const reg_t val) noexcept {
+  pre_val = val;
+}
+
 reg_t mip_csr_t::write_mask() const noexcept {
   const reg_t supervisor_ints = proc->extension_enabled('S') ? MIP_SSIP | MIP_STIP | MIP_SEIP : 0;
   const reg_t vssip_int = proc->extension_enabled('H') ? MIP_VSSIP : 0;

@@ -341,9 +341,20 @@ class mip_or_mie_csr_t: public csr_t {
 class mip_csr_t: public mip_or_mie_csr_t {
  public:
   mip_csr_t(processor_t* const proc, const reg_t addr);
+  virtual reg_t read_pre_val() const noexcept;
+  // The pre_val of MIP is used to determine if an interrupt will be taken at
+  // the beginning of an instruction step. Whilst the actual CSR value is the
+  // one accessed by any CSR instruction that may be executed.
+  //
+  // Nothing updates the value to become the pre_val. This is designed for use
+  // with co-simulation where the co-simulation environment is expected to do
+  // suitable value and pre_val updates before every step.
+  virtual void write_pre_val(const reg_t val) noexcept;
 
   // Does not log. Used by external things (clint) that wiggle bits in mip.
   void backdoor_write_with_mask(const reg_t mask, const reg_t val) noexcept;
+ protected:
+  reg_t pre_val;
  private:
   virtual reg_t write_mask() const noexcept override;
 };

@@ -374,7 +374,11 @@ private:
       throw trap_t(((reg_t)1 << get_isa().get_max_xlen()) - 1 - NMI_INTERRUPT_NUM);
     }
 
-    take_interrupt(state.mip->read() & state.mie->read());
+    // Interrupt is based on the 'pre_val' of MIP which is set by the
+    // co-simulation environment. This can differ from the actual value which is
+    // what is observed by CSR instructions. This models the case where the MIP
+    // changes whilst an instruction is stalled in the ID/EX stage.
+    take_interrupt(state.mip->read_pre_val() & state.mie->read());
   }
   void take_interrupt(reg_t mask); // take first enabled interrupt in mask
   void take_trap(trap_t& t, reg_t epc); // take an exception
