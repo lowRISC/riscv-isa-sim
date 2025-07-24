@@ -8,9 +8,9 @@ for (int i = Sn(11); i >= 0; i--) {
     addr -= xlen / 8;
 
     if (xlen == 32)
-      WRITE_REG(i, MMU.load<int32_t>(addr));
+      WRITE_REG(i, MMU.load_int32(addr));
     else
-      WRITE_REG(i, MMU.load<int64_t>(addr));
+      WRITE_REG(i, MMU.load_int64(addr));
   }
 }
 

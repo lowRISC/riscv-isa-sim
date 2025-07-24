@@ -8,9 +8,9 @@ for (int i = Sn(11); i >= 0; i--) {
     addr -= xlen / 8;
 
     if (xlen == 32)
-      MMU.store<uint32_t>(addr, READ_REG(i));
+      MMU.store_uint32(addr, READ_REG(i));
     else
-      MMU.store<uint64_t>(addr, READ_REG(i));
+      MMU.store_uint64(addr, READ_REG(i));
   }
 }
 

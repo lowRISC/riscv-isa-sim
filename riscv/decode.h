@@ -131,6 +131,8 @@ public:
   uint64_t rvc_rlist() { return x(4, 4); }
   uint64_t rvc_spimm() { return x(2, 2) << 4; }
 
+  uint64_t rvc_index() { return x(2, 8); }
+
   uint64_t v_vm() { return x(25, 1); }
   uint64_t v_wd() { return x(26, 1); }
   uint64_t v_nf() { return x(29, 3); }
@@ -299,7 +301,7 @@ private:
 #define dirty_vs_state  STATE.sstatus->dirty(SSTATUS_VS)
 #define DO_WRITE_FREG(reg, value) (STATE.FPR.write(reg, value), dirty_fp_state)
 #define WRITE_FRD(value) WRITE_FREG(insn.rd(), value)
- 
+
 #define SHAMT (insn.i_imm() & 0x3F)
 #define BRANCH_TARGET (pc + insn.sb_imm())
 #define JUMP_TARGET (pc + insn.uj_imm())
