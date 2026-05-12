@@ -36,7 +36,7 @@ isa_parser_t::isa_parser_t(const char* str, const char *priv)
   max_isa = reg_t(2) << 62;
   // enable zicntr and zihpm unconditionally for backward compatibility
   extension_table[EXT_ZICNTR] = true;
-  extension_table[EXT_ZIHPM] = false; // IBEX does not implement this extension
+  extension_table[EXT_ZIHPM] = true;
 
   if (isa_string.compare(0, 4, "rv32") == 0)
     max_xlen = 32, max_isa = reg_t(1) << 30;
