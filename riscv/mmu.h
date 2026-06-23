@@ -56,8 +56,25 @@ public:
   {
 #ifdef RISCV_ENABLE_MISALIGNED
     reg_t res = 0;
-    for (size_t i = 0; i < size; i++)
-      res += (reg_t)load_uint8(addr + (target_big_endian? size-1-i : i)) << (i * 8);
+    bool caught_fault = false;
+    trap_load_access_fault fault(false, 0, 0, 0);
+    for (size_t i = 0; i < size; i++) {
+      try {
+        res += (reg_t)load_uint8(addr + (target_big_endian? size-1-i : i)) << (i * 8);
+      } catch (trap_load_access_fault& f) {
+        if (!caught_fault) {
+          // Catch first fault seen on unaligned access and proceed with other bytes of the access.
+          fault = f;
+          caught_fault = true;
+        }
+      }
+    }
+
+    if (caught_fault) {
+      // Throw a fault if we saw onw
+      throw fault;
+    }
+
     return res;
 #else
     bool gva = ((proc) ? proc->state.v : false) || (RISCV_XLATE_VIRT & xlate_flags);
@@ -68,8 +85,24 @@ public:
   inline void misaligned_store(reg_t addr, reg_t data, size_t size, uint32_t xlate_flags, bool actually_store=true)
   {
 #ifdef RISCV_ENABLE_MISALIGNED
-    for (size_t i = 0; i < size; i++)
-      store_uint8(addr + (target_big_endian? size-1-i : i), data >> (i * 8), actually_store);
+    bool caught_fault = false;
+    trap_store_access_fault fault(false, 0, 0, 0);
+    for (size_t i = 0; i < size; i++) {
+      try {
+        store_uint8(addr + (target_big_endian? size-1-i : i), data >> (i * 8), actually_store);
+      } catch (trap_store_access_fault& f) {
+        if (!caught_fault) {
+          // Catch first fault seen on unaligned access and proceed with other bytes of the access.
+          fault = f;
+          caught_fault = true;
+        }
+      }
+    }
+
+    if (caught_fault) {
+      // Throw a fault if we saw onw
+      throw fault;
+    }
 #else
     bool gva = ((proc) ? proc->state.v : false) || (RISCV_XLATE_VIRT & xlate_flags);
     throw trap_store_address_misaligned(gva, addr, 0, 0);
